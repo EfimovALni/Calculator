@@ -2,11 +2,12 @@ package Application;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 /**
  * Created by alex on 5.7.17.
@@ -17,6 +18,13 @@ public class Calculator extends JFrame{
 
     public final int appWidth = 330;
     public final int appHeight = 485;
+
+    public boolean pressedOrUnpressedDigit; // For defined pressed or unpressed digit, include "±", "."
+    public boolean znakFlag; // Показывает удалили ли знак из TextArea или нет
+
+    private Double result = 0.0;
+
+
 
     private JTextArea history;
     private JTextArea display;
@@ -42,7 +50,7 @@ public class Calculator extends JFrame{
     private JButton pi;              // π
 
 
-    public JButton one;
+    private JButton one;
     private JButton two;
     private JButton three;
     private JButton subtraction;    // −
@@ -54,7 +62,51 @@ public class Calculator extends JFrame{
     private JButton addition;
     private JButton equals;
 
-    private char operationChar;
+    public char getOperationChar() {
+        return operationChar;
+    }
+
+    public void setOperationChar(char operationChar) {
+        this.operationChar = operationChar;
+    }
+
+    public char operationChar;
+
+    public Double getNumberOne() {
+        return numberOne;
+    }
+
+    public void setNumberOne(Double numberOne) {
+        this.numberOne = numberOne;
+    }
+
+    private Double numberOne;       // The First input number
+
+    public Double getNumberTwo() {
+        return numberTwo;
+    }
+
+    public void setNumberTwo(Double numberTwo) {
+        this.numberTwo = numberTwo;
+    }
+
+    private Double numberTwo;       // The First input number
+
+    public Double getResult() {
+        return result;
+    }
+
+    public void setResult(Double result) {
+        this.result = result;
+    }
+
+    public static double getWidthUserScreen() {
+        return widthUserScreen;
+    }
+
+    public static void setWidthUserScreen(double widthUserScreen) {
+        Calculator.widthUserScreen = widthUserScreen;
+    }
 
 
     public static void main(String[] args) {
@@ -152,6 +204,8 @@ public class Calculator extends JFrame{
         seven.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                pressedOrUnpressedDigit = true;
+
                 if (display.getText().length() > 9)
                     return;
                 if (display.getText().equalsIgnoreCase("0")) {
@@ -169,6 +223,8 @@ public class Calculator extends JFrame{
         eight.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                pressedOrUnpressedDigit = true;
+
                 if (display.getText().length() > 9)
                     return;
                 if (display.getText().equalsIgnoreCase("0")) {
@@ -186,6 +242,8 @@ public class Calculator extends JFrame{
         nine.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                pressedOrUnpressedDigit = true;
+
                 if (display.getText().length() > 9)
                     return;
                 if (display.getText().equalsIgnoreCase("0")) {
@@ -235,6 +293,8 @@ public class Calculator extends JFrame{
         four.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                pressedOrUnpressedDigit = true;
+
                 if (display.getText().length() > 9)
                     return;
                 if (display.getText().equalsIgnoreCase("0")) {
@@ -252,6 +312,8 @@ public class Calculator extends JFrame{
         five.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                pressedOrUnpressedDigit = true;
+
                 if (display.getText().length() > 9)
                     return;
                 if (display.getText().equalsIgnoreCase("0")){
@@ -269,6 +331,8 @@ public class Calculator extends JFrame{
         six.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                pressedOrUnpressedDigit = true;
+
                 if (display.getText().length() > 9)
                     return;
                 if (display.getText().equalsIgnoreCase("0")) {
@@ -286,6 +350,25 @@ public class Calculator extends JFrame{
         multiplication.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+
+                /*DecimalFormat decimalFormat = new DecimalFormat();
+
+                DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+
+                decimalFormatSymbols.setDecimalSeparator('.');
+
+                decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
+
+
+                decimalFormat.setDecimalSeparatorAlwaysShown(false);
+
+                setNumberOne(Double.parseDouble(display.getText()));
+
+                history.append(decimalFormat.format(getNumberOne()));
+
+                Double d = 1.4000;
+                System.out.println( decimalFormat.format(d) );
+                System.out.println( decimalFormat.format(getNumberOne()) );*/
 
             }
         });
@@ -310,6 +393,8 @@ public class Calculator extends JFrame{
         one.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                pressedOrUnpressedDigit = true;
+
                 if (display.getText().length() > 9)
                     return;
                 if (display.getText().equalsIgnoreCase("0")) {
@@ -327,6 +412,8 @@ public class Calculator extends JFrame{
         two.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                pressedOrUnpressedDigit = true;
+
                 if (display.getText().length() > 9)
                     return;
                 if (display.getText().equalsIgnoreCase("0")) {
@@ -344,8 +431,11 @@ public class Calculator extends JFrame{
         three.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (display.getText().length() > 9)
+                pressedOrUnpressedDigit = true;     // Say us about "The digit was pressed" include ".", "±"
+
+                if (display.getText().length() > 9) {
                     return;
+                }
                 if (display.getText().equalsIgnoreCase("0")) {
                     display.setText("3");
                     return;
@@ -361,7 +451,32 @@ public class Calculator extends JFrame{
         subtraction.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                setOperationChar('-');
+                znakFlag = true;
 
+                if (pressedOrUnpressedDigit) {
+                    setNumberOne(Double.parseDouble(display.getText()));
+//                    history.append(getNumberOne()  + "\n" + String.valueOf(getOperationChar()) + "\n");
+                    if (getNumberOne().toString().endsWith(".0")) {
+                        history.append(getNumberOne().toString().replace(".0", "")
+                                + "\n" + getOperationChar() + "\n");
+                        display.setText("0");
+                    } else {
+                        history.append(getNumberOne().toString() + "\n" + getOperationChar() + "\n");
+                        display.setText("0");
+                    }
+                } else {
+                    if (znakFlag) {
+                        if (!history.getText().endsWith("-")) {
+                            for (int i = 0; i < 2; i++) {
+                                history.setText(history.getText().substring(0, history.getText().length() - 1));
+                            }
+                            history.append(String.valueOf(getOperationChar()) + "\n");
+                        }
+                    }
+                    znakFlag = false;
+                }
+                pressedOrUnpressedDigit = false;
             }
         });
         add(subtraction);
@@ -397,6 +512,8 @@ public class Calculator extends JFrame{
         zero.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                pressedOrUnpressedDigit = true;
+
                 if (display.getText().length() > 9)
                     return;
                 if (display.getText().equalsIgnoreCase("0")) {
@@ -414,6 +531,8 @@ public class Calculator extends JFrame{
         znakPlusMinus.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                pressedOrUnpressedDigit = true;
+
                 String tempZnakPlusMinusS = display.getText();
                 Double tempZnakPlusMinusD = (Double.parseDouble(tempZnakPlusMinusS) * -1);
 
@@ -435,6 +554,8 @@ public class Calculator extends JFrame{
         dot.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                pressedOrUnpressedDigit  =true;
+
                 if (!display.getText().contains("."))
                     display.append(".");
                     else
@@ -450,6 +571,56 @@ public class Calculator extends JFrame{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
 
+//                System.out.println("Before "+ getOperationChar());
+                setOperationChar('+');
+                znakFlag = true;
+
+                if (pressedOrUnpressedDigit) {
+                    setNumberOne(Double.parseDouble(display.getText()));
+//                    history.append(getNumberOne()  + "\n" + String.valueOf(getOperationChar()) + "\n");
+
+                    if (getNumberOne().toString().endsWith(".0")) {
+                        history.append(getNumberOne().toString().replace(".0", "")
+                                + "\n" + getOperationChar() + "\n");
+                        display.setText("0");
+                    } else {
+                        history.append(getNumberOne().toString() + "\n" + getOperationChar() + "\n");
+                        display.setText("0");
+                    }
+                } else {
+
+                    if (znakFlag) {
+
+                        if (!history.getText().endsWith("+")) {
+//                            System.err.println("Po" + getOperationChar());
+                            for (int i = 0; i < 2; i++) {
+                                history.setText(history.getText().substring(0, history.getText().length() - 1));
+                            }
+                            history.append(String.valueOf(getOperationChar()) + "\n");
+                        }
+                    }
+                    znakFlag = false;
+                }
+                pressedOrUnpressedDigit = false;
+
+
+//                System.out.println("after " + getOperationChar());
+
+               /* //    РАБОЧИИ КОД - старый!
+
+               setNumberOne(Double.parseDouble(display.getText()));
+
+                if (getNumberOne().toString().endsWith(".0")) {
+                    history.append(getNumberOne().toString().replace(".0", "")
+                            + "\n"*//* + operationChar + "\n"*//*);
+                    display.setText("0");
+                } else {
+                    history.append(getNumberOne().toString() + "\n");
+                    display.setText("0");
+                }*/
+
+                //if (pressedOrUnpressedDigit)
+                  //  history.append(String.valueOf(operationChar) + "\n");
             }
         });
         add(addition);
@@ -460,7 +631,45 @@ public class Calculator extends JFrame{
         equals.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                switch (getOperationChar()) {
+                    case '+' :
+//                        history.append(String.valueOf(operationChar) + "\n");
+                        setNumberTwo(Double.parseDouble(display.getText()));
 
+                        result = getNumberOne() + getNumberTwo();
+                        String resultS = String.valueOf(result);
+
+                        if (getNumberTwo().toString().endsWith("0")) {
+                            history.append(getNumberTwo().toString().replace(".0", "") + "\n");
+                            display.setText("0");
+                        } else {
+                            history.append(getNumberTwo().toString() + "\n");
+                            display.setText("0");
+                        }
+
+                        if (resultS.endsWith("0")) {
+                            history.append(resultS.replace(".0", "") + "\n");
+                            display.setText("0");
+                        } else {
+                            history.append(resultS + "\n");
+                            display.setText(resultS);
+                        }
+
+
+//                        history.append(String.valueOf(getNumberOne() + getNumberTwo()) + "\n");
+
+
+                        break;
+                    case '-' :
+                        break;
+                    case '*' :
+                        break;
+                    case '/' :
+                        break;
+                    case '%' :
+                        break;
+                }
+                pressedOrUnpressedDigit =  false;
             }
         });
         add(equals);
