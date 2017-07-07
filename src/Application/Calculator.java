@@ -13,16 +13,26 @@ import java.text.DecimalFormatSymbols;
  * Created by alex on 5.7.17.
  */
 public class Calculator extends JFrame{
+//    Format format; // Import class "Format"
+
     public static double widthUserScreen =  0.0;
     public static double heightUserScreen = 0.0;
 
-    public final int appWidth = 330;
-    public final int appHeight = 485;
+    private final int appWidth = 330;
+    private final int appHeight = 485;
 
     public boolean pressedOrUnpressedDigit; // For defined pressed or unpressed digit, include "±", "."
     public boolean znakFlag; // Показывает удалили ли знак из TextArea или нет
+    public boolean plusFlag;           // Indication of "flag" or "unflag" button
 
     private Double result = 0.0;
+
+    private Double tempPlus = 0.0;
+
+    DecimalFormat decimalFormat = new DecimalFormat();
+    DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+
+
 
 
 
@@ -106,6 +116,14 @@ public class Calculator extends JFrame{
 
     public static void setWidthUserScreen(double widthUserScreen) {
         Calculator.widthUserScreen = widthUserScreen;
+    }
+
+    public Double getTempPlus() {
+        return tempPlus;
+    }
+
+    public void setTempPlus(Double tempPlus) {
+        this.tempPlus = tempPlus;
     }
 
 
@@ -351,11 +369,19 @@ public class Calculator extends JFrame{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
 
-                /*DecimalFormat decimalFormat = new DecimalFormat();
+                /*
+                Пока непонятно вводить ли этот Десимал или "реплэйсом" обойтись
+                Тот громозкийй, да и этот надо куда то в функцию выносить..
+                Короче надо подумать! */
 
-                DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+//                format = new Format(2.0002);
+//                format = new Format(Math.PI);
 
-                decimalFormatSymbols.setDecimalSeparator('.');
+
+
+
+
+               /* decimalFormatSymbols.setDecimalSeparator('.');
 
                 decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
 
@@ -364,11 +390,7 @@ public class Calculator extends JFrame{
 
                 setNumberOne(Double.parseDouble(display.getText()));
 
-                history.append(decimalFormat.format(getNumberOne()));
-
-                Double d = 1.4000;
-                System.out.println( decimalFormat.format(d) );
-                System.out.println( decimalFormat.format(getNumberOne()) );*/
+                history.append(decimalFormat.format(getNumberOne()));*/
 
             }
         });
@@ -574,6 +596,7 @@ public class Calculator extends JFrame{
 //                System.out.println("Before "+ getOperationChar());
                 setOperationChar('+');
                 znakFlag = true;
+                plusFlag = true;
 
                 if (pressedOrUnpressedDigit) {
                     setNumberOne(Double.parseDouble(display.getText()));
@@ -633,30 +656,35 @@ public class Calculator extends JFrame{
             public void actionPerformed(ActionEvent actionEvent) {
                 switch (getOperationChar()) {
                     case '+' :
-//                        history.append(String.valueOf(operationChar) + "\n");
-                        setNumberTwo(Double.parseDouble(display.getText()));
+                        if (plusFlag) {
 
-                        result = getNumberOne() + getNumberTwo();
-                        String resultS = String.valueOf(result);
+                            setNumberTwo(Double.parseDouble(display.getText()));
 
-                        if (getNumberTwo().toString().endsWith("0")) {
-                            history.append(getNumberTwo().toString().replace(".0", "") + "\n");
-                            display.setText("0");
-                        } else {
+                            setResult(getNumberOne() + getNumberTwo());
+                            System.out.println("Bef:\t" + getResult());
+
+                            setResult(format(getResult()));
+
+                            System.out.println("Aft:\t" + getResult());
+
+                            String resultS = String.valueOf(getResult());
+
                             history.append(getNumberTwo().toString() + "\n");
                             display.setText("0");
-                        }
 
-                        if (resultS.endsWith("0")) {
-                            history.append(resultS.replace(".0", "") + "\n");
-                            display.setText("0");
-                        } else {
-                            history.append(resultS + "\n");
+                            history.append(" = " + resultS + "\n");
                             display.setText(resultS);
+
+                            setTempPlus(getResult());
+                            plusFlag = false;
+
+                        } else {
+                            history.append(String.valueOf(getOperationChar()) + "\n" + getNumberTwo().toString() + "\n");
+                            setResult(format(tempPlus + getNumberTwo()));
+                            display.setText(getResult().toString());
+                            history.append(" = " + getResult().toString() + "\n");
+                            tempPlus = getResult();
                         }
-
-
-//                        history.append(String.valueOf(getNumberOne() + getNumberTwo()) + "\n");
 
 
                         break;
@@ -669,10 +697,29 @@ public class Calculator extends JFrame{
                     case '%' :
                         break;
                 }
+
+                if (display.getText().endsWith(".0") || history.getText().endsWith(".0")) {
+                    display.setText(display.getText().replace(".0", ""));
+                    history.setText(history.getText().replace(".0", ""));
+                }
                 pressedOrUnpressedDigit =  false;
             }
         });
         add(equals);
+    }
+
+    private double format (Double resultDecimalFormat) {
+        // resultDecimalFormat - result in decimal format
+        DecimalFormat decimalFormat = new DecimalFormat();
+        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+
+        decimalFormatSymbols.setDecimalSeparator('.');
+        decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
+        decimalFormat.setDecimalSeparatorAlwaysShown(false);
+
+        setResult(Double.parseDouble(decimalFormat.format(resultDecimalFormat)));
+
+        return getResult();
     }
 
     private void displays() {
@@ -680,7 +727,7 @@ public class Calculator extends JFrame{
         history = new JTextArea();
         jScrollPaneHistory = new JScrollPane(history);
         jScrollPaneHistory.setBounds(5, 5, appWidth - 10, 150);
-        history.setFont(new Font("Arial", Font.PLAIN, 20));
+        history.setFont(new Font("Arial", Font.PLAIN, 15));
 //        history.setEditable(false);
         add(jScrollPaneHistory);
 
