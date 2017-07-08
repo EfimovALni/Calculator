@@ -22,8 +22,10 @@ public class Calculator extends JFrame{
     private final int appHeight = 485;
 
     public boolean pressedOrUnpressedDigit; // For defined pressed or unpressed digit, include "±", "."
-    public boolean znakFlag; // Показывает удалили ли знак из TextArea или нет
-    public boolean plusFlag;           // Indication of "flag" or "unflag" button
+    public boolean znakFlag;        // Показывает удалили ли знак из TextArea или нет
+    public boolean plusFlag;        // Indication of "flag" or "unflag" button
+    public boolean equalsFlag;        // Показывает была ли нажата кнопка "=".
+    public boolean doubleEqual; // Если ТРУ то значит после равно сразу был нажат какой то математический знак
 
     private Double result = 0.0;
 
@@ -576,7 +578,7 @@ public class Calculator extends JFrame{
         dot.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                pressedOrUnpressedDigit  =true;
+                pressedOrUnpressedDigit = true;
 
                 if (!display.getText().contains("."))
                     display.append(".");
@@ -598,6 +600,51 @@ public class Calculator extends JFrame{
                 znakFlag = true;
                 plusFlag = true;
 
+
+                /* Этот кусок кода - пытаюсь сделать что бы при нажатии 3+4=7, а потом опять нажать например
+                "+" и экран очистится и добавится число которое веду с клавы напр "9",
+                в итоге на экране должно появиться 7+9 = 16. Продолжение смотри на кнопке "="
+
+                if (pressedOrUnpressedDigit && equalsFlag) {
+
+                    setNumberOne(Double.parseDouble(display.getText()));
+
+                    history.append(getNumberOne().toString() + "\n" + getOperationChar() + "\n");
+                    display.setText("0");
+
+                    System.out.println("Test 'equalsFlag':\t" + equalsFlag);
+                    equalsFlag = false;
+
+                }
+
+                if (pressedOrUnpressedDigit && !equalsFlag) {
+//                    equalsFlag = true;
+                    setNumberOne(Double.parseDouble(display.getText()));
+//                   history.append(getNumberOne()  + "\n" + String.valueOf(getOperationChar()) + "\n");
+
+                    if (getNumberOne().toString().endsWith(".0")) {
+                        history.append(getNumberOne().toString().replace(".0", "")
+                                + "\n" + getOperationChar() + "\n");
+                        display.setText("0");
+                    } else {
+                        history.append(getNumberOne().toString() + "\n" + getOperationChar() + "\n");
+                        display.setText("0");
+                    }
+                } else {
+                    if (znakFlag) {
+                        if (!history.getText().endsWith("+")) {
+//                           System.err.println("Po" + getOperationChar());
+                            for (int i = 0; i < 2; i++) {
+                                history.setText(history.getText().substring(0, history.getText().length() - 1));
+                            }
+                            history.append("\n" + String.valueOf(getOperationChar()) + "\n");
+                        }
+                    }
+                    znakFlag = false;
+                }*/
+
+
+                // Код работает
                 if (pressedOrUnpressedDigit) {
                     setNumberOne(Double.parseDouble(display.getText()));
 //                    history.append(getNumberOne()  + "\n" + String.valueOf(getOperationChar()) + "\n");
@@ -619,7 +666,7 @@ public class Calculator extends JFrame{
                             for (int i = 0; i < 2; i++) {
                                 history.setText(history.getText().substring(0, history.getText().length() - 1));
                             }
-                            history.append(String.valueOf(getOperationChar()) + "\n");
+                            history.append("\n" + String.valueOf(getOperationChar()) + "\n");
                         }
                     }
                     znakFlag = false;
@@ -654,18 +701,39 @@ public class Calculator extends JFrame{
         equals.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+
+                equalsFlag = true;
+
                 switch (getOperationChar()) {
                     case '+' :
+
+                        /*
+                        Этот кусок кода - пытаюсь сделать что бы при нажатии 3+4=7, а потом опять нажать например
+                "+" и экран очистится и добавится число которое веду с клавы напр "9",
+                в итоге на экране должно появиться 7+9 = 16. Продолжение смотри на кнопке "+"
+
+                        if (pressedOrUnpressedDigit && equalsFlag) {
+                            setNumberTwo(Double.parseDouble(display.getText()));
+
+                            setResult(getNumberOne() + getNumberTwo());
+
+                            display.setText(String.valueOf(getResult()));
+
+                            history.append(getNumberTwo().toString() + "\n");
+                            history.append(" = " + String.valueOf(getResult()) + "\n");
+
+                            System.out.println("From '='\t" + getResult());
+                        }*/
+
+
+                        // Код работает!
                         if (plusFlag) {
 
                             setNumberTwo(Double.parseDouble(display.getText()));
 
                             setResult(getNumberOne() + getNumberTwo());
-                            System.out.println("Bef:\t" + getResult());
 
                             setResult(format(getResult()));
-
-                            System.out.println("Aft:\t" + getResult());
 
                             String resultS = String.valueOf(getResult());
 
@@ -679,12 +747,15 @@ public class Calculator extends JFrame{
                             plusFlag = false;
 
                         } else {
+
+
                             history.append(String.valueOf(getOperationChar()) + "\n" + getNumberTwo().toString() + "\n");
                             setResult(format(tempPlus + getNumberTwo()));
                             display.setText(getResult().toString());
                             history.append(" = " + getResult().toString() + "\n");
                             tempPlus = getResult();
                         }
+
 
 
                         break;
@@ -728,14 +799,14 @@ public class Calculator extends JFrame{
         jScrollPaneHistory = new JScrollPane(history);
         jScrollPaneHistory.setBounds(5, 5, appWidth - 10, 150);
         history.setFont(new Font("Arial", Font.PLAIN, 15));
-//        history.setEditable(false);
+        history.setEditable(false);
         add(jScrollPaneHistory);
 
         display = new JTextArea("0");
         display.setBounds(5, 160, appWidth - 10,40);
         display.setFont(new Font("Arial",Font.PLAIN, 40));
         display.setBackground(Color.lightGray);
-//        display.setEditable(false);
+        display.setEditable(false);
         add(display);
     }
 
