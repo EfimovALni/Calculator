@@ -29,7 +29,8 @@ public class Calculator extends JFrame{
     public boolean znakFlag;        // Show was or wasn't delete 'sign of number' (i.e. '-3.4') from TextArea
     public boolean plusFlag;        // Indication of "flag" or "unflag" button '+'
     public boolean minusFlag;       // Indication of "flag" or "unflag" button '-'
-    public boolean supplyFlag;       // Indication of "flag" or "unflag" button '*'
+    public boolean supplyFlag;      // Indication of "flag" or "unflag" button '*'
+    public boolean divisionFlag;      // Indication of "flag" or "unflag" button '/'
     public boolean equalsFlag;      // Show was or wasn't pressed button '='  Показывает была ли нажата кнопка "=".
     public boolean equalsPressFlag; /* Показывает было ли нажато '='
                                        Это для того что бы когда мы нажимает более одного раза действие 2+3+5=10
@@ -297,7 +298,68 @@ public class Calculator extends JFrame{
         division.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                setOperationChar('/');
+                znakFlag = true;
+                divisionFlag = true;
 
+                try {
+                    if (pressedOrUnpressedDigit) {
+                        equalsFlag = false;
+
+                        if (!equalsPressFlag) {
+                            setNumberOne(Double.parseDouble(display.getText()));
+                            toTrimZero(getNumberOne());
+                            history.append("\n" + String.valueOf(getOperationChar()) + "\n");
+                            equalsPressFlag = true;
+                        } else if (equalsPressFlag) {
+                            setNumberTwo(Double.parseDouble(display.getText()));
+                            display.setText("0");
+                            setTempResult(getNumberOne() / getNumberTwo());
+                            System.out.println("Double press '/': " + getResult());
+
+                            history.append(" ");    // For gap between operation sign & sign of digit (i.e. + -34.2)
+                            toTrimZero(getNumberTwo());
+
+                            history.append("\n = ");
+                            toTrimZero(getTempResult());
+                            history.append("\n");
+
+                            setNumberOne(getTempResult());
+                            history.append(String.valueOf(getOperationChar()) + "\n");
+                        }
+                    } else if (equalsFlag) {
+                        // выполнение этого условия позволяет прибавлять к ответу что то еще, что набрано на цифровой клаве
+                        history.append(getOperationChar() + "\n");
+                        setNumberOne(Double.parseDouble(display.getText()));
+                        display.setText("0");
+
+                        if (znakFlag) {
+                            // Это услови удаляет, введеную операцию и меняет её на '+'
+                            if (!history.getText().endsWith("/")) {
+                                for (int i = 0; i < 2; i++) {
+                                    history.setText(history.getText().substring(0, history.getText().length() - 1));
+                                }
+                                history.append(String.valueOf(getOperationChar()) + "\n");
+                            }
+                        }
+                        znakFlag = false;
+                        equalsFlag = false;
+                    } else {
+                        if (znakFlag) {
+                            if (!history.getText().endsWith("/")) {
+                                for (int i = 0; i < 2; i++) {
+                                    history.setText(history.getText().substring(0, history.getText().length() - 1));
+                                }
+                                System.out.println("test:\t" + operationChar);
+                                history.append(String.valueOf(getOperationChar()) + "\n");
+                            }
+                        }
+                        znakFlag = false;
+                    }
+                    pressedOrUnpressedDigit = false;
+                } catch (Exception e) {
+                    System.err.println("Exception, because wasn't pressed some digits.");
+                }
             }
         });
         add(division);
@@ -387,9 +449,9 @@ public class Calculator extends JFrame{
         multiplication.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                /*setOperationChar('*');
+                setOperationChar('*');
                 znakFlag = true;
-                plusFlag = true;
+                supplyFlag = true;
 
                 try {
                     if (pressedOrUnpressedDigit) {
@@ -399,7 +461,8 @@ public class Calculator extends JFrame{
                         if (!equalsPressFlag) {
                             setNumberOne(Double.parseDouble(display.getText()));
                             toTrimZero(getNumberOne());
-                            history.append("\n" + String.valueOf(getOperationChar()) + "\n");                            equalsPressFlag = true;
+                            history.append("\n" + String.valueOf(getOperationChar()) + "\n");
+                            equalsPressFlag = true;
 
                         } else if (equalsPressFlag) {
                             setNumberTwo(Double.parseDouble(display.getText()));
@@ -450,7 +513,7 @@ public class Calculator extends JFrame{
 
                 } catch (Exception e) {
                     System.err.println("Exception, because wasn't pressed some digits.");
-                }*/
+                }
 
 
                 /*
@@ -547,7 +610,7 @@ public class Calculator extends JFrame{
         subtraction.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-               /* setOperationChar('-');
+               setOperationChar('-');
                 znakFlag = true;
                 minusFlag = true;
 
@@ -609,7 +672,7 @@ public class Calculator extends JFrame{
                     pressedOrUnpressedDigit = false;
                 } catch (Exception e) {
                     System.err.println("Exception, because wasn't pressed some digits.");
-                }*/
+                }
             }
                 /*setOperationChar('-');
                 znakFlag = true;
@@ -781,7 +844,6 @@ public class Calculator extends JFrame{
                             toTrimZero(getNumberOne());
                             history.append("\n" + String.valueOf(getOperationChar()) + "\n");
                             equalsPressFlag = true;
-
                         } else if (equalsPressFlag) {
                             setNumberTwo(Double.parseDouble(display.getText()));
                             display.setText("0");
@@ -828,7 +890,6 @@ public class Calculator extends JFrame{
                         znakFlag = false;
                     }
                     pressedOrUnpressedDigit = false;
-
                 } catch (Exception e) {
                     System.err.println("Exception, because wasn't pressed some digits.");
                 }
@@ -911,7 +972,7 @@ public class Calculator extends JFrame{
                         }*/
                         break;
                     case '*' :
-                        /*if (supplyFlag) {
+                        if (supplyFlag) {
                             setNumberTwo(Double.parseDouble(display.getText()));
                             setResult(getNumberOne() * getNumberTwo());
                             String resultS = String.valueOf(getResult());
@@ -928,10 +989,10 @@ public class Calculator extends JFrame{
                             display.setText(getResult().toString());
                             history.append(" = " + getResult().toString() + "\n");
                             tempPlus = getResult();
-                        }*/
+                        }
                         break;
                     case '/' :
-                        /*if (plusFlag) {
+                        if (divisionFlag) {
                             setNumberTwo(Double.parseDouble(display.getText()));
                             setResult(getNumberOne() / getNumberTwo());
                             String resultS = String.valueOf(getResult());
@@ -941,14 +1002,14 @@ public class Calculator extends JFrame{
                             display.setText(resultS);
 
                             setTempPlus(getResult());
-                            plusFlag = false;
+                            divisionFlag = false;
                         } else {
                             history.append(String.valueOf(getOperationChar()) + "\n" + getNumberTwo().toString() + "\n");
                             setResult(tempPlus / getNumberTwo());
                             display.setText(getResult().toString());
                             history.append(" = " + getResult().toString() + "\n");
                             tempPlus = getResult();
-                        }*/
+                        }
                         break;
                     case '%' :
                         break;
